@@ -14,7 +14,7 @@ export class ColumnService {
         position: 'desc',
       },
     });
-    const position = lastColumn?.position ? lastColumn.position + 1 : 1;
+    const position = (lastColumn?.position ?? 0) + 1;
     return this.prisma.column.create({
       data: {
         ...createColumnDto,

@@ -1,0 +1,19 @@
+### Variáveis
+@baseUrl = http://localhost:3000
+
+### 1. CREATE COLUMN
+POST {{baseUrl}}/column
+Content-Type: application/json
+
+{
+  "name": "Concluído"
+}
+
+### 2. FIND ALL COLUMN
+GET {{baseUrl}}/column
+
+
+### 3. REORDER COLUMN
+POST {{baseUrl}}/column/reorder
+Content-Type: application/json
+

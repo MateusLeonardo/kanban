@@ -1,8 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ColumnService } from './column.service';
-import { ColumnResolver } from './column.resolver';
+import { ColumnController } from './column.controller';
+import { PrismaModule } from 'src/prisma/prisma.module';
 
 @Module({
-  providers: [ColumnResolver, ColumnService],
+  imports: [PrismaModule],
+  controllers: [ColumnController],
+  providers: [ColumnService],
 })
 export class ColumnModule {}

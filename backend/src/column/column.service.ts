@@ -1,50 +1,69 @@
-import { Injectable } from '@nestjs/common';
-import { CreateColumnInput } from './dto/create-column.input';
-import { UpdateColumnInput } from './dto/update-column.input';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { CreateColumnDto } from './dto/create-column.dto';
+import { UpdateColumnDto } from './dto/update-column.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { ReorderColumnDto } from './dto/reorder-column.dto';
 
 @Injectable()
 export class ColumnService {
-  constructor(private readonly prismaService: PrismaService) {}
-  async create(data: CreateColumnInput) {
-    const lastComunPosition = await this.prismaService.column.findFirst({
+  constructor(private prisma: PrismaService) {}
+
+  async create(createColumnDto: CreateColumnDto) {
+    const lastColumn = await this.prisma.column.findFirst({
       orderBy: {
         position: 'desc',
       },
     });
-    const newPosition = (lastComunPosition?.position || 0) + 1;
-    return this.prismaService.column.create({
+    const position = lastColumn?.position ? lastColumn.position + 1 : 1;
+    return this.prisma.column.create({
       data: {
-        ...data,
-        position: newPosition,
+        ...createColumnDto,
+        position,
       },
     });
   }
 
   findAll() {
-    return this.prismaService.column.findMany({
+    return this.prisma.column.findMany({
       orderBy: {
         position: 'asc',
+      },
+      include: {
+        cards: true,
       },
     });
   }
 
-  findOne(id: number) {
-    return this.prismaService.column.findUnique({
-      where: { id },
+  async findOne(id: number) {
+    const column = await this.prisma.column.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!column) {
+      throw new NotFoundException('Column not found');
+    }
+    return column;
+  }
+  async reorderColumn(reorderColumnDto: ReorderColumnDto[]) {}
+
+  async update(id: number, updateColumnDto: UpdateColumnDto) {
+    await this.findOne(id);
+    return this.prisma.column.update({
+      where: {
+        id,
+      },
+      data: updateColumnDto,
     });
   }
 
-  update(id: number, data: UpdateColumnInput) {
-    return this.prismaService.column.update({
-      where: { id },
-      data,
-    });
-  }
-
-  remove(id: number) {
-    return this.prismaService.column.delete({
-      where: { id },
+  async remove(id: number) {
+    await this.findOne(id);
+    return this.prisma.column.delete({
+      where: {
+        id,
+      },
     });
   }
 }

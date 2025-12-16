@@ -8,15 +8,6 @@ import { Column, Kanban } from './services/kanban.service';
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
-export class App implements OnInit {
+export class App {
   protected readonly title = signal('frontend');
-  protected readonly columns = signal<Column[]>([]);
-  private kanban = inject(Kanban);
-
-  ngOnInit() {
-    this.kanban.getColumnsWithCards().subscribe((columns) => {
-      console.log(columns);
-      this.columns.set(columns);
-    });
-  }
 }

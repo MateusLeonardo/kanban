@@ -49,6 +49,7 @@ export class CardService {
   }
 
   async update(id: number, updateCardDto: UpdateCardDto) {
+    await this.columnService.findOne(updateCardDto.columnId);
     await this.findOne(id);
     return this.prisma.card.update({
       where: {

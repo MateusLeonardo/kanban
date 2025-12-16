@@ -46,7 +46,20 @@ export class ColumnService {
     }
     return column;
   }
-  async reorderColumn(reorderColumnDto: ReorderColumnDto[]) {}
+  async reorderColumn(reorderColumnDto: ReorderColumnDto[]) {
+    await Promise.all(
+      reorderColumnDto.map(async (dto) => {
+        await this.prisma.column.update({
+          where: {
+            id: dto.id,
+          },
+          data: {
+            position: dto.position,
+          },
+        });
+      }),
+    );
+  }
 
   async update(id: number, updateColumnDto: UpdateColumnDto) {
     await this.findOne(id);

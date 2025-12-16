@@ -7,10 +7,8 @@ import {
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { Column, Kanban } from '../../services/kanban.service';
-/**
- * @title Drag&Drop connected sorting group
- */
+import { Card, Column, Kanban } from '../../services/kanban.service';
+
 @Component({
   selector: 'cdk-drag-drop-connected-sorting-group-example',
   templateUrl: './column-list.html',
@@ -23,12 +21,31 @@ export class ColumnList implements OnInit {
 
   ngOnInit() {
     this.kanban.getColumnsWithCards().subscribe((columns) => {
-      console.log(columns);
       this.columns.set(columns);
     });
   }
 
-  drop(event: CdkDragDrop<Column[]>) {
+  dropColumn(event: CdkDragDrop<Column[]>) {
+    const cols = this.columns();
+    moveItemInArray(cols, event.previousIndex, event.currentIndex);
+    this.columns.set([...cols]);
+
+    this.kanban
+      .reorderColumn(
+        cols.map((col, index) => ({
+          id: col.id,
+          position: index,
+        }))
+      )
+      .subscribe({
+        error: (err) => {
+          console.error('Error reordering columns:', err);
+          this.ngOnInit();
+        },
+      });
+  }
+
+  dropCard(event: CdkDragDrop<Card[]>) {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } else {

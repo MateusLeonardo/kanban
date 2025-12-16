@@ -1,44 +1,25 @@
 <div cdkDropListGroup>
-  <!-- <div class="example-container">
-    <h2>To do</h2>
-    <div
-      cdkDropList
-      [cdkDropListData]="todo"
-      class="example-list"
-      (cdkDropListDropped)="drop($event)"
-    >
-      @for (item of todo; track item) {
-      <div class="example-box" cdkDrag>{{ item }}</div>
-      }
+  <div
+    cdkDropList
+    [cdkDropListData]="columns()"
+    cdkDropListOrientation="horizontal"
+    (cdkDropListDropped)="dropColumn($event)"
+    class="columns-container"
+  >
+    @for (column of columns(); track column.id) {
+    <div class="example-container" cdkDrag>
+      <h2>{{ column.name }}</h2>
+      <div
+        cdkDropList
+        [cdkDropListData]="column.cards"
+        class="example-list"
+        (cdkDropListDropped)="dropCard($event)"
+      >
+        @for (card of column.cards; track card.id) {
+        <div class="example-box" cdkDrag>{{ card.name }}</div>
+        }
+      </div>
     </div>
+    }
   </div>
-  <div class="example-container">
-    <h2>Done</h2>
-    <div
-      cdkDropList
-      [cdkDropListData]="done"
-      class="example-list"
-      (cdkDropListDropped)="drop($event)"
-    >
-      @for (item of done; track item) {
-      <div class="example-box" cdkDrag>{{ item }}</div>
-      }
-    </div>
-  </div> -->
-
-  @for (column of columns(); track column.id) {
-  <div class="example-container">
-    <h2>{{ column.name }}</h2>
-    <div
-      cdkDropList
-      [cdkDropListData]="column.cards"
-      class="example-list"
-      (cdkDropListDropped)="drop($event)"
-    >
-      @for (card of column.cards; track card.id) {
-      <div class="example-box" cdkDrag>{{ card.name }}</div>
-      }
-    </div>
-  </div>
-  }
 </div>

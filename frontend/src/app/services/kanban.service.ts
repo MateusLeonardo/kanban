@@ -20,6 +20,11 @@ export interface Card {
   updatedAt: Date;
 }
 
+export interface ReorderColumnDto {
+  id: number;
+  position: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -28,5 +33,8 @@ export class Kanban {
 
   getColumnsWithCards() {
     return this.http.get<Column[]>(`${environment.apiUrl}/column`);
+  }
+  reorderColumn(reorderColumnDto: ReorderColumnDto[]) {
+    return this.http.post(`${environment.apiUrl}/column/reorder`, reorderColumnDto);
   }
 }

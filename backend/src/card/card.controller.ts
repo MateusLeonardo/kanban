@@ -1,7 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { CardService } from './card.service';
 import { CreateCardDto } from './dto/create-card.dto';
 import { UpdateCardDto } from './dto/update-card.dto';
+import { ReorderCardDto } from './dto/reorder-card-dto';
 
 @Controller('card')
 export class CardController {
@@ -15,6 +24,11 @@ export class CardController {
   @Get()
   findAll() {
     return this.cardService.findAll();
+  }
+
+  @Post('reorder')
+  reorderCard(@Body() reorderCardDto: ReorderCardDto[]) {
+    return this.cardService.reorderCard(reorderCardDto);
   }
 
   @Get(':id')

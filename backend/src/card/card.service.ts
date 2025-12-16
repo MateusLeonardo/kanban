@@ -3,6 +3,7 @@ import { CreateCardDto } from './dto/create-card.dto';
 import { UpdateCardDto } from './dto/update-card.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ColumnService } from 'src/column/column.service';
+import { ReorderCardDto } from './dto/reorder-card-dto';
 
 @Injectable()
 export class CardService {
@@ -33,6 +34,22 @@ export class CardService {
         position: 'asc',
       },
     });
+  }
+
+  async reorderCard(reorderCardDto: ReorderCardDto[]) {
+    await Promise.all(
+      reorderCardDto.map(async (dto) => {
+        await this.prisma.card.update({
+          where: {
+            id: dto.id,
+          },
+          data: {
+            position: dto.position,
+            ...(dto.columnId !== undefined && { columnId: dto.columnId }),
+          },
+        });
+      }),
+    );
   }
 
   async findOne(id: number) {

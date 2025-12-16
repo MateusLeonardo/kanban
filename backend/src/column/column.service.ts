@@ -29,7 +29,11 @@ export class ColumnService {
         position: 'asc',
       },
       include: {
-        cards: true,
+        cards: {
+          orderBy: {
+            position: 'asc',
+          },
+        },
       },
     });
   }

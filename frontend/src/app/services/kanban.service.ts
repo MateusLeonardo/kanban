@@ -24,6 +24,11 @@ export interface ReorderColumnDto {
   id: number;
   position: number;
 }
+export interface ReorderCardDto {
+  id: number;
+  position: number;
+  columnId?: number;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -36,5 +41,9 @@ export class Kanban {
   }
   reorderColumn(reorderColumnDto: ReorderColumnDto[]) {
     return this.http.post(`${environment.apiUrl}/column/reorder`, reorderColumnDto);
+  }
+
+  reorderCard(reorderCardDto: ReorderCardDto[]) {
+    return this.http.post(`${environment.apiUrl}/card/reorder`, reorderCardDto);
   }
 }

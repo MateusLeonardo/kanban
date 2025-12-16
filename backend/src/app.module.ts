@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { ColumnModule } from './column/column.module';
 import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionFilter } from './filters/all-exception.filter';
+import { CardModule } from './card/card.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { AllExceptionFilter } from './filters/all-exception.filter';
       isGlobal: true,
     }),
     ColumnModule,
+    CardModule,
   ],
   controllers: [AppController],
   providers: [

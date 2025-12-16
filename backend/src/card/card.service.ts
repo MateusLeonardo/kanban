@@ -1,0 +1,71 @@
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { CreateCardDto } from './dto/create-card.dto';
+import { UpdateCardDto } from './dto/update-card.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { ColumnService } from 'src/column/column.service';
+
+@Injectable()
+export class CardService {
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly columnService: ColumnService,
+  ) {}
+
+  async create(createCardDto: CreateCardDto) {
+    await this.columnService.findOne(createCardDto.columnId);
+    const lastCard = await this.prisma.card.findFirst({
+      orderBy: {
+        position: 'desc',
+      },
+    });
+    const position = (lastCard?.position ?? 0) + 1;
+    return this.prisma.card.create({
+      data: {
+        ...createCardDto,
+        position,
+      },
+    });
+  }
+
+  findAll() {
+    return this.prisma.card.findMany({
+      orderBy: {
+        position: 'asc',
+      },
+    });
+  }
+
+  async findOne(id: number) {
+    const card = await this.prisma.card.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!card) {
+      throw new NotFoundException('Card not found');
+    }
+    return card;
+  }
+
+  async update(id: number, updateCardDto: UpdateCardDto) {
+    await this.findOne(id);
+    return this.prisma.card.update({
+      where: {
+        id,
+      },
+      data: {
+        ...updateCardDto,
+      },
+    });
+  }
+
+  async remove(id: number) {
+    await this.findOne(id);
+    return this.prisma.card.delete({
+      where: {
+        id,
+      },
+    });
+  }
+}

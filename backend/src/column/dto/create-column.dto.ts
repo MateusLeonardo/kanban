@@ -4,8 +4,4 @@ export class CreateColumnDto {
   @IsString()
   @IsNotEmpty()
   name: string;
-
-  @IsNumber()
-  @IsOptional()
-  position: number;
 }

@@ -17,3 +17,14 @@ GET {{baseUrl}}/column
 POST {{baseUrl}}/column/reorder
 Content-Type: application/json
 
+### 4. DELETE COLUMN
+DELETE {{baseUrl}}/column/:id
+
+### 5. CREATE CARD
+POST {{baseUrl}}/card
+Content-Type: application/json
+
+{
+  "name": "Card 2",
+  "columnId": 2
+}

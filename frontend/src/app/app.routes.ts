@@ -1,9 +1,9 @@
 import { Routes } from '@angular/router';
-import { ColumnList } from './column/column-list/column-list';
+import { Board } from './features/board/board/board';
 
 export const routes: Routes = [
   {
     path: '',
-    component: ColumnList,
+    component: Board,
   },
 ];

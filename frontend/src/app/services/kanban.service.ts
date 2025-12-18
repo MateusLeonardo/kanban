@@ -2,16 +2,16 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment.development';
 
-export interface Column {
+export interface ColumnModel {
   id: number;
   name: string;
   position: number;
   createdAt: Date;
   updatedAt: Date;
-  cards: Card[];
+  cards: CardModel[];
 }
 
-export interface Card {
+export interface CardModel {
   id: number;
   name: string;
   description?: string;
@@ -30,14 +30,23 @@ export interface ReorderCardDto {
   columnId?: number;
 }
 
+export interface CreateColumnDto {
+  name: string;
+}
+
+export interface UpdateColumnDto {
+  id: number;
+  name: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
-export class Kanban {
+export class KanbanService {
   private http = inject(HttpClient);
 
   getColumnsWithCards() {
-    return this.http.get<Column[]>(`${environment.apiUrl}/column`);
+    return this.http.get<ColumnModel[]>(`${environment.apiUrl}/column`);
   }
   reorderColumn(reorderColumnDto: ReorderColumnDto[]) {
     return this.http.post(`${environment.apiUrl}/column/reorder`, reorderColumnDto);
@@ -45,5 +54,12 @@ export class Kanban {
 
   reorderCard(reorderCardDto: ReorderCardDto[]) {
     return this.http.post(`${environment.apiUrl}/card/reorder`, reorderCardDto);
+  }
+
+  createColumn(createColumnDto: CreateColumnDto) {
+    return this.http.post(`${environment.apiUrl}/column`, createColumnDto);
+  }
+  updateColumn({ id, name }: UpdateColumnDto) {
+    return this.http.patch(`${environment.apiUrl}/column/${id}`, { name });
   }
 }

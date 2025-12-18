@@ -15,11 +15,11 @@
           <h2>{{ column.name }}</h2>
         </div>
         <div>
-          <button mat-button (click)="openDeleteColumnDialog(column)">
-            <mat-icon>delete</mat-icon>
-          </button>
           <button mat-button (click)="openUpdateColumnDialog(column)">
             <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-button (click)="openDeleteColumnDialog(column)">
+            <mat-icon>delete</mat-icon>
           </button>
         </div>
       </div>
@@ -34,7 +34,9 @@
         (cdkDropListDropped)="dropCard($event, column.id)"
       >
         @for (card of column.cards; track card.id) {
-        <div class="example-box" cdkDrag>{{ card.name }}</div>
+        <div class="example-box">
+          <app-card [card]="card" />
+        </div>
         }
       </div>
     </div>

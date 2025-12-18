@@ -39,13 +39,7 @@
 }
 
 .example-box {
-  padding: 12px;
-  margin-bottom: 8px;
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  cursor: move;
-  transition: box-shadow 0.2s;
+  /* cursor: move; */
 }
 
 .example-box:hover {

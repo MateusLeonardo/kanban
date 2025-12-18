@@ -18,12 +18,13 @@ import { UpdateColumnDialog } from '../../../shared/column/update-column-dialog/
 import { MatAnchor, MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { ConfirmDeleteColumnDialog } from '../../../shared/column/confirm-delete-column-dialog/confirm-delete-column-dialog';
+import { Card } from '../card/card';
 
 @Component({
   selector: 'board-column',
   templateUrl: './column.html',
   styleUrl: './column.css',
-  imports: [CdkDropList, CdkDrag, CdkDragHandle, MatAnchor, MatButton, MatIcon],
+  imports: [CdkDropList, CdkDrag, CdkDragHandle, MatAnchor, MatButton, MatIcon, Card],
 })
 export class Column implements OnInit {
   protected readonly columns = signal<ColumnModel[]>([]);

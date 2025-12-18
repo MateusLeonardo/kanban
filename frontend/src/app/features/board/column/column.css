@@ -1,0 +1,71 @@
+.kanban-board {
+  padding: 20px;
+  overflow-x: auto;
+}
+
+.columns-wrapper {
+  display: flex;
+  gap: 16px;
+  min-height: 500px;
+}
+
+.example-container {
+  min-width: 300px;
+  background: #f5f5f5;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.column-header {
+  margin-bottom: 16px;
+  cursor: move; /* Indica que pode arrastar pela header */
+  user-select: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.column-header h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.example-list {
+  min-height: 400px;
+  background: white;
+  border-radius: 4px;
+  padding: 8px;
+}
+
+.example-box {
+  padding: 12px;
+  margin-bottom: 8px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: move;
+  transition: box-shadow 0.2s;
+}
+
+.example-box:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.cdk-drag-preview {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  opacity: 0.8;
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.4;
+  background: #e0e0e0;
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.example-list.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}

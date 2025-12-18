@@ -17,6 +17,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { UpdateColumnDialog } from '../../../shared/column/update-column-dialog/update-column-dialog';
 import { MatAnchor, MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
+import { ConfirmDeleteColumnDialog } from '../../../shared/column/confirm-delete-column-dialog/confirm-delete-column-dialog';
 
 @Component({
   selector: 'board-column',
@@ -126,5 +127,23 @@ export class Column implements OnInit {
         },
       });
     }
+  }
+
+  openDeleteColumnDialog(column: ColumnModel) {
+    const dialogRef = this.dialog.open(ConfirmDeleteColumnDialog, {
+      width: '350px',
+      disableClose: false,
+      data: {
+        columnName: column.name,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.kanban.deleteColumnWithCards(column.id).subscribe(() => {
+          this.loadColumnsWithCards();
+        });
+      }
+    });
   }
 }

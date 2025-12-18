@@ -15,7 +15,9 @@
           <h2>{{ column.name }}</h2>
         </div>
         <div>
-          <button>Deletar coluna</button>
+          <button mat-button (click)="openDeleteColumnDialog(column)">
+            <mat-icon>delete</mat-icon>
+          </button>
           <button mat-button (click)="openUpdateColumnDialog(column)">
             <mat-icon>edit</mat-icon>
           </button>

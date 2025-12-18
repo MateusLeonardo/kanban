@@ -62,4 +62,7 @@ export class KanbanService {
   updateColumn({ id, name }: UpdateColumnDto) {
     return this.http.patch(`${environment.apiUrl}/column/${id}`, { name });
   }
+  deleteColumnWithCards(columnId: number) {
+    return this.http.delete(`${environment.apiUrl}/column/${columnId}`);
+  }
 }

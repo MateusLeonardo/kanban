@@ -1,10 +1,15 @@
 <div class="card">
-  <div cdkDrag cdkDragHandle class="card-content">
+  <div cdkDrag cdkDragHandle class="card__content">
     <h3>{{ card().name }}</h3>
     <p>{{ card().description ?? '' }}</p>
   </div>
-  <div>
-    <button>edit</button>
-    <button>delete</button>
+  <div class="card__actions">
+    <button mat-icon-button class="button__edit">
+      <mat-icon>edit</mat-icon>
+    </button>
+
+    <button mat-icon-button class="button__delete">
+      <mat-icon>delete</mat-icon>
+    </button>
   </div>
 </div>

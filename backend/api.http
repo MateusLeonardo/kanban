@@ -25,7 +25,7 @@ POST {{baseUrl}}/card
 Content-Type: application/json
 
 {
-  "name": "Card 3",
-  "description": "Descrição do Card 3",
+  "name": "Card 4",
+  "description": "Descrição do Card 4",
   "columnId": 1
 }

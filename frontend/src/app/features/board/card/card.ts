@@ -1,10 +1,12 @@
 import { Component, input } from '@angular/core';
 import { CardModel } from '../../../services/kanban.service';
-import { CdkDragHandle, CdkDrag } from '@angular/cdk/drag-drop';
+import { CdkDrag } from '@angular/cdk/drag-drop';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-card',
-  imports: [CdkDrag],
+  imports: [CdkDrag, MatIconModule, MatButtonModule],
   templateUrl: './card.html',
   styleUrl: './card.css',
 })

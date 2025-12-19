@@ -6,7 +6,7 @@ import {
   moveItemInArray,
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
-import { Component, inject, OnChanges, OnInit, signal, SimpleChanges } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import {
   CardModel,
   ReorderCardDto,
@@ -15,7 +15,7 @@ import {
 } from '../../../services/kanban.service';
 import { MatDialog } from '@angular/material/dialog';
 import { UpdateColumnDialog } from '../../../shared/column/update-column-dialog/update-column-dialog';
-import { MatAnchor, MatButton } from '@angular/material/button';
+import { MatButtonModule } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { ConfirmDeleteColumnDialog } from '../../../shared/column/confirm-delete-column-dialog/confirm-delete-column-dialog';
 import { Card } from '../card/card';
@@ -24,7 +24,7 @@ import { Card } from '../card/card';
   selector: 'board-column',
   templateUrl: './column.html',
   styleUrl: './column.css',
-  imports: [CdkDropList, CdkDrag, CdkDragHandle, MatAnchor, MatButton, MatIcon, Card],
+  imports: [CdkDropList, CdkDrag, CdkDragHandle, MatButtonModule, MatIcon, Card],
 })
 export class Column implements OnInit {
   protected readonly columns = signal<ColumnModel[]>([]);

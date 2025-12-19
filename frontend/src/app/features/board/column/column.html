@@ -15,10 +15,10 @@
           <h2>{{ column.name }}</h2>
         </div>
         <div>
-          <button mat-button (click)="openUpdateColumnDialog(column)">
+          <button mat-icon-button (click)="openUpdateColumnDialog(column)" class="button__edit">
             <mat-icon>edit</mat-icon>
           </button>
-          <button mat-button (click)="openDeleteColumnDialog(column)">
+          <button mat-icon-button (click)="openDeleteColumnDialog(column)" class="button__delete">
             <mat-icon>delete</mat-icon>
           </button>
         </div>
@@ -39,6 +39,8 @@
         </div>
         }
       </div>
+
+      <div>Adicionar card</div>
     </div>
     }
   </div>

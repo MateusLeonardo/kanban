@@ -77,4 +77,7 @@ export class KanbanService {
   updateCard({ id, ...updateCardDto }: UpdateCardDto) {
     return this.http.patch(`${environment.apiUrl}/card/${id}`, updateCardDto);
   }
+  deleteCard(cardId: number) {
+    return this.http.delete(`${environment.apiUrl}/card/${cardId}`);
+  }
 }

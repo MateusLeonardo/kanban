@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { UpdateCardDialog } from '../../../shared/card/update-card-dialog/update-card-dialog';
+import { ConfirmDeleteCardDialog } from '../../../shared/card/confirm-delete-card-dialog/confirm-delete-card-dialog';
 
 @Component({
   selector: 'app-card',
@@ -15,6 +16,7 @@ import { UpdateCardDialog } from '../../../shared/card/update-card-dialog/update
 export class Card {
   card = input.required<CardModel>();
   onCardUpdated = output();
+  onCardDeleted = output();
   readonly dialog = inject(MatDialog);
   kanbanService = inject(KanbanService);
 
@@ -30,6 +32,22 @@ export class Card {
       if (!result) return;
       this.kanbanService.updateCard(result).subscribe(() => {
         this.onCardUpdated.emit();
+      });
+    });
+  }
+
+  openConfirmDeleteCardDialog() {
+    const dialogRef = this.dialog.open(ConfirmDeleteCardDialog, {
+      data: {
+        name: this.card().name,
+      },
+      width: '350px',
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (!result) return;
+
+      this.kanbanService.deleteCard(this.card().id).subscribe(() => {
+        this.onCardDeleted.emit();
       });
     });
   }

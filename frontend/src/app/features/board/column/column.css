@@ -10,7 +10,7 @@
 }
 
 .example-container {
-  min-width: 300px;
+  width: 350px;
   background: #f5f5f5;
   border-radius: 8px;
   padding: 16px;

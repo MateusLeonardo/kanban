@@ -35,7 +35,7 @@
       >
         @for (card of column.cards; track card.id) {
         <div class="example-box">
-          <app-card [card]="card" />
+          <app-card [card]="card" (onCardUpdated)="loadColumnsWithCards()" />
         </div>
         }
       </div>

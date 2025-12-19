@@ -41,7 +41,11 @@ export class UpdateCardDialog {
   onSubmit() {
     if (!this.cardForm.valid) return;
 
-    this.dialogRef.close(this.cardForm.value);
+    this.dialogRef.close({
+      id: this.data.card.id,
+      columnId: this.data.card.columnId,
+      ...this.cardForm.value,
+    });
   }
 
   onCancel() {

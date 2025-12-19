@@ -1,5 +1,5 @@
-import { Component, inject, input } from '@angular/core';
-import { CardModel } from '../../../services/kanban.service';
+import { Component, inject, input, output } from '@angular/core';
+import { CardModel, KanbanService } from '../../../services/kanban.service';
 import { CdkDrag } from '@angular/cdk/drag-drop';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -14,14 +14,23 @@ import { UpdateCardDialog } from '../../../shared/card/update-card-dialog/update
 })
 export class Card {
   card = input.required<CardModel>();
+  onCardUpdated = output();
   readonly dialog = inject(MatDialog);
+  kanbanService = inject(KanbanService);
 
   openUpdateCardDialog() {
-    this.dialog.open(UpdateCardDialog, {
+    const dialogRef = this.dialog.open(UpdateCardDialog, {
       data: {
         card: this.card(),
       },
       width: '350px',
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (!result) return;
+      this.kanbanService.updateCard(result).subscribe(() => {
+        this.onCardUpdated.emit();
+      });
     });
   }
 }

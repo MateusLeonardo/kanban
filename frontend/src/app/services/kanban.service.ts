@@ -15,6 +15,7 @@ export interface CardModel {
   id: number;
   name: string;
   description?: string;
+  columnId: number;
   position: number;
   createdAt: Date;
   updatedAt: Date;
@@ -37,6 +38,13 @@ export interface CreateColumnDto {
 export interface UpdateColumnDto {
   id: number;
   name: string;
+}
+
+export interface UpdateCardDto {
+  id: number;
+  name: string;
+  columnId: number;
+  description?: string;
 }
 
 @Injectable({
@@ -64,5 +72,9 @@ export class KanbanService {
   }
   deleteColumnWithCards(columnId: number) {
     return this.http.delete(`${environment.apiUrl}/column/${columnId}`);
+  }
+
+  updateCard({ id, ...updateCardDto }: UpdateCardDto) {
+    return this.http.patch(`${environment.apiUrl}/card/${id}`, updateCardDto);
   }
 }

@@ -109,6 +109,9 @@ export class Column implements OnInit {
         event.currentIndex
       );
 
+      const movedCard = event.container.data[event.currentIndex];
+      movedCard.columnId = targetColumnId;
+
       const cardsToUpdate: ReorderCardDto[] = [
         ...event.previousContainer.data.map((card, index) => ({
           id: card.id,

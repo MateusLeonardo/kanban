@@ -4,7 +4,7 @@
     <p>{{ card().description ?? '' }}</p>
   </div>
   <div class="card__actions">
-    <button mat-icon-button class="button__edit">
+    <button mat-icon-button class="button__edit" (click)="openUpdateCardDialog()">
       <mat-icon>edit</mat-icon>
     </button>
 

@@ -1,8 +1,10 @@
-import { Component, input } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { CardModel } from '../../../services/kanban.service';
 import { CdkDrag } from '@angular/cdk/drag-drop';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
+import { UpdateCardDialog } from '../../../shared/card/update-card-dialog/update-card-dialog';
 
 @Component({
   selector: 'app-card',
@@ -12,4 +14,14 @@ import { MatButtonModule } from '@angular/material/button';
 })
 export class Card {
   card = input.required<CardModel>();
+  readonly dialog = inject(MatDialog);
+
+  openUpdateCardDialog() {
+    this.dialog.open(UpdateCardDialog, {
+      data: {
+        card: this.card(),
+      },
+      width: '350px',
+    });
+  }
 }

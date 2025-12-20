@@ -12,6 +12,7 @@ import {
   ReorderCardDto,
   ColumnModel,
   KanbanService,
+  CreateCardDto,
 } from '../../../services/kanban.service';
 import { MatDialog } from '@angular/material/dialog';
 import { UpdateColumnDialog } from '../../../shared/column/update-column-dialog/update-column-dialog';
@@ -19,6 +20,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { ConfirmDeleteColumnDialog } from '../../../shared/column/confirm-delete-column-dialog/confirm-delete-column-dialog';
 import { Card } from '../card/card';
+import { CreateCardDialog } from '../../../shared/card/create-card-dialog/create-card-dialog';
 
 @Component({
   selector: 'board-column',
@@ -145,6 +147,26 @@ export class Column implements OnInit {
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.kanban.deleteColumnWithCards(column.id).subscribe(() => {
+          this.loadColumnsWithCards();
+        });
+      }
+    });
+  }
+
+  openCreateCardDialog(columnId: number) {
+    const dialogRef = this.dialog.open(CreateCardDialog, {
+      width: '450px',
+      disableClose: false,
+    });
+
+    dialogRef.afterClosed().subscribe((result: { name: string; description?: string }) => {
+      const card: CreateCardDto = {
+        name: result.name,
+        description: result.description ?? '',
+        columnId,
+      };
+      if (result) {
+        this.kanban.createCard(card).subscribe(() => {
           this.loadColumnsWithCards();
         });
       }

@@ -47,6 +47,12 @@ export interface UpdateCardDto {
   description?: string;
 }
 
+export interface CreateCardDto {
+  name: string;
+  description?: string;
+  columnId: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -79,5 +85,8 @@ export class KanbanService {
   }
   deleteCard(cardId: number) {
     return this.http.delete(`${environment.apiUrl}/card/${cardId}`);
+  }
+  createCard(createCardDto: CreateCardDto) {
+    return this.http.post(`${environment.apiUrl}/card`, createCardDto);
   }
 }

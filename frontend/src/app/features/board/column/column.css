@@ -74,3 +74,20 @@ mat-icon {
 .button__edit {
   color: var(--mat-sys-primary);
 }
+
+.add-card {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 10px;
+}
+
+.add-card button {
+  width: 60%;
+  font-size: 14px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+}

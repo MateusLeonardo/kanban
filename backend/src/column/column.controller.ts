@@ -21,9 +21,9 @@ export class ColumnController {
     return this.columnService.create(createColumnDto);
   }
 
-  @Get()
-  findAll() {
-    return this.columnService.findAll();
+  @Get('with-cards')
+  findAllWithCards() {
+    return this.columnService.findAllWithCards();
   }
 
   @Post('reorder')

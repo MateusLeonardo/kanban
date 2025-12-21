@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateColumnDto } from './dto/create-column.dto';
 import { UpdateColumnDto } from './dto/update-column.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { ReorderColumnDto } from './dto/reorder-column.dto';
 
 @Injectable()
@@ -23,7 +23,7 @@ export class ColumnService {
     });
   }
 
-  findAll() {
+  findAllWithCards() {
     return this.prisma.column.findMany({
       orderBy: {
         position: 'asc',

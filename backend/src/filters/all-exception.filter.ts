@@ -12,9 +12,9 @@ import {
 } from 'generated/prisma/internal/prismaNamespace';
 
 export interface ExceptionResponse {
-  type?: string;
-  statusCode?: number;
-  message?: string;
+  error: string;
+  statusCode: number;
+  message: string[];
 }
 @Catch()
 export class AllExceptionFilter implements ExceptionFilter {
@@ -23,16 +23,17 @@ export class AllExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
 
     if (exception instanceof HttpException) {
-      return response.status(exception.getStatus()).json({
-        type: exception.constructor.name,
-        statusCode: exception.getStatus(),
-        message: exception.message,
+      const errorResponse = exception.getResponse() as ExceptionResponse;
+      return response.status(errorResponse.statusCode).json({
+        error: errorResponse.error,
+        statusCode: errorResponse.statusCode,
+        message: errorResponse.message,
       });
     }
 
     if (exception instanceof PrismaClientKnownRequestError) {
       return response.status(HttpStatus.BAD_REQUEST).json({
-        type: exception.constructor.name,
+        error: exception.constructor.name,
         statusCode: HttpStatus.BAD_REQUEST,
         message: exception.message,
       });
@@ -40,14 +41,14 @@ export class AllExceptionFilter implements ExceptionFilter {
 
     if (exception instanceof PrismaClientValidationError) {
       return response.status(HttpStatus.BAD_REQUEST).json({
-        type: exception.constructor.name,
+        error: exception.constructor.name,
         statusCode: HttpStatus.BAD_REQUEST,
         message: exception.message,
       });
     }
 
     return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-      type: 'InternalServerError',
+      error: 'Internal Server Error',
       statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Internal server error',
     });

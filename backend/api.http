@@ -6,7 +6,7 @@ POST {{baseUrl}}/column
 Content-Type: application/json
 
 {
-  "name": "Concluído"
+  "name": ""
 }
 
 ### 2. FIND ALL COLUMN
@@ -18,7 +18,7 @@ POST {{baseUrl}}/column/reorder
 Content-Type: application/json
 
 ### 4. DELETE COLUMN
-DELETE {{baseUrl}}/column/:id
+DELETE {{baseUrl}}/column/12
 
 ### 5. CREATE CARD
 POST {{baseUrl}}/card

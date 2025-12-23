@@ -60,7 +60,7 @@ export class KanbanService {
   private http = inject(HttpClient);
 
   getColumnsWithCards() {
-    return this.http.get<ColumnModel[]>(`${environment.apiUrl}/column`);
+    return this.http.get<ColumnModel[]>(`${environment.apiUrl}/column/with-cards`);
   }
   reorderColumn(reorderColumnDto: ReorderColumnDto[]) {
     return this.http.post(`${environment.apiUrl}/column/reorder`, reorderColumnDto);

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateColumnDto } from './dto/create-column.dto';
 import { UpdateColumnDto } from './dto/update-column.dto';
 import { PrismaService } from '../prisma/prisma.service';
@@ -46,22 +50,32 @@ export class ColumnService {
     });
 
     if (!column) {
-      throw new NotFoundException('Column not found');
+      throw new NotFoundException('A coluna não existe.');
     }
     return column;
   }
+
   async reorderColumn(reorderColumnDto: ReorderColumnDto[]) {
-    await Promise.all(
-      reorderColumnDto.map(async (dto) => {
-        await this.prisma.column.update({
-          where: {
-            id: dto.id,
-          },
-          data: {
-            position: dto.position,
-          },
-        });
-      }),
+    const ids = reorderColumnDto.map((dto) => dto.id);
+    const positions = reorderColumnDto.map((dto) => dto.position);
+
+    if (new Set(ids).size !== ids.length) {
+      throw new BadRequestException('Ids duplicados não são permitidos.');
+    }
+
+    if (new Set(positions).size !== positions.length) {
+      throw new BadRequestException('Posições duplicadas não são permitidos.');
+    }
+
+    await Promise.all(ids.map((id) => this.findOne(id)));
+
+    await this.prisma.$transaction(
+      reorderColumnDto.map((dto) =>
+        this.prisma.column.update({
+          where: { id: dto.id },
+          data: { position: dto.position },
+        }),
+      ),
     );
   }
 

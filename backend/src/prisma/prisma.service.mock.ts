@@ -10,4 +10,5 @@ const createPrismaDefaultMethods = () => ({
 export const mockPrismaService = {
   column: createPrismaDefaultMethods(),
   card: createPrismaDefaultMethods(),
+  $transaction: jest.fn(),
 };

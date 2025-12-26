@@ -101,7 +101,7 @@ export class CardService {
     });
 
     if (!card) {
-      throw new NotFoundException('Card not found.');
+      throw new NotFoundException('O card não foi encontrado.');
     }
     return card;
   }

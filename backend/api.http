@@ -10,7 +10,7 @@ Content-Type: application/json
 }
 
 ### 2. FIND ALL COLUMN
-GET {{baseUrl}}/column
+GET {{baseUrl}}/column/with-cards
 
 
 ### 3. REORDER COLUMN

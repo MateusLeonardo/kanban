@@ -137,4 +137,44 @@ describe('CardService', () => {
       expect(result).toEqual(mockCard);
     });
   });
+
+  describe('findAll', () => {
+    it('Deve retornar todos os cards', async () => {
+      const mockCards: Card[] = [
+        {
+          id: 1,
+          name: 'Card 1',
+          description: 'Descrição do Card 1',
+          columnId: 1,
+          position: 1,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          id: 2,
+          name: 'Card 2',
+          description: 'Descrição do Card 2',
+          columnId: 1,
+          position: 2,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ];
+
+      mockPrismaService.card.findMany.mockResolvedValue(mockCards);
+
+      const result = await service.findAll();
+
+      expect(mockPrismaService.card.findMany).toHaveBeenCalledWith();
+      expect(result).toEqual(mockCards);
+    });
+
+    it('Deve retornar um array vazio quando não houver cards', async () => {
+      mockPrismaService.card.findMany.mockResolvedValue([]);
+
+      const result = await service.findAll();
+      expect(mockPrismaService.card.findMany).toHaveBeenCalledWith();
+      expect(result).toEqual([]);
+    });
+  });
 });

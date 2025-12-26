@@ -7,6 +7,7 @@ import { CreateCardDto } from './dto/create-card.dto';
 import { Card, Column } from 'generated/prisma/client';
 import { NotFoundException } from '@nestjs/common';
 import { ReorderCardDto } from './dto/reorder-card-dto';
+import { UpdateCardDto } from './dto/update-card.dto';
 
 describe('CardService', () => {
   let service: CardService;
@@ -205,7 +206,7 @@ describe('CardService', () => {
     it('Deve lançar NotFoundException quando o card não for encontrado', async () => {
       mockPrismaService.card.findUnique.mockResolvedValue(null);
       await expect(service.findOne(999)).rejects.toThrow(
-        new NotFoundException('Card not found.'),
+        new NotFoundException('O card não foi encontrado.'),
       );
     });
   });
@@ -309,8 +310,8 @@ describe('CardService', () => {
         .mockResolvedValueOnce(mockCards[1]);
 
       mockPrismaService.column.findUnique
-        .mockResolvedValueOnce(mockColumns[1]) // columnId: 2
-        .mockResolvedValueOnce(mockColumns[0]); // columnId: 1
+        .mockResolvedValueOnce(mockColumns[1])
+        .mockResolvedValueOnce(mockColumns[0]);
 
       mockPrismaService.$transaction.mockResolvedValue([
         { ...mockCards[0], position: 2, columnId: 2 },
@@ -330,6 +331,185 @@ describe('CardService', () => {
       });
 
       expect(mockPrismaService.$transaction).toHaveBeenCalledTimes(1);
+    });
+
+    it('Deve lançar NotFoundException quando o card não for encontrado', async () => {
+      const reorderCardDto: ReorderCardDto[] = [{ id: 1, position: 1 }];
+
+      mockPrismaService.card.findUnique.mockResolvedValueOnce(null);
+
+      await expect(service.reorderCard(reorderCardDto)).rejects.toThrow(
+        new NotFoundException('O card não foi encontrado.'),
+      );
+    });
+  });
+
+  describe('update', () => {
+    it('Deve atualizar um card', async () => {
+      const updateCardDto: UpdateCardDto = {
+        name: 'Card Atualizado',
+        description: 'Descrição Atualizada',
+        columnId: 1,
+      };
+
+      const mockCard = {
+        id: 1,
+        name: 'Card Original',
+        description: 'Descrição Original',
+        position: 1,
+        columnId: 1,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      const mockColumn = {
+        id: 1,
+        name: 'Column 1',
+        position: 1,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      const updatedCard = {
+        ...mockCard,
+        ...updateCardDto,
+      };
+
+      mockPrismaService.column.findUnique.mockResolvedValue(mockColumn);
+
+      mockPrismaService.card.findUnique.mockResolvedValue(mockCard);
+
+      mockPrismaService.card.update.mockResolvedValue(updatedCard);
+
+      const result = await service.update(1, updateCardDto);
+
+      expect(mockPrismaService.column.findUnique).toHaveBeenCalledWith({
+        where: { id: 1 },
+      });
+
+      expect(mockPrismaService.card.findUnique).toHaveBeenCalledWith({
+        where: { id: 1 },
+      });
+
+      expect(mockPrismaService.card.update).toHaveBeenCalledWith({
+        where: { id: 1 },
+        data: updateCardDto,
+      });
+
+      expect(result).toEqual(updatedCard);
+    });
+
+    it('Deve atualizar apenas o nome do card', async () => {
+      const updateCardDto: UpdateCardDto = {
+        name: 'Novo Nome',
+        columnId: 1,
+      };
+
+      const mockCard = {
+        id: 1,
+        name: 'Card Original',
+        description: 'Descrição Original',
+        position: 1,
+        columnId: 1,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      const mockColumn = {
+        id: 1,
+        name: 'Column 1',
+        position: 1,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      const updatedCard = {
+        ...mockCard,
+        name: 'Novo Nome',
+      };
+
+      mockPrismaService.column.findUnique.mockResolvedValue(mockColumn);
+      mockPrismaService.card.findUnique.mockResolvedValue(mockCard);
+      mockPrismaService.card.update.mockResolvedValue(updatedCard);
+
+      const result = await service.update(1, updateCardDto);
+
+      expect(result).toEqual(updatedCard);
+    });
+
+    it('Deve lançar NotFoundException quando o card não existir', async () => {
+      const updateCardDto: UpdateCardDto = {
+        name: 'Card Atualizado',
+        columnId: 1,
+      };
+
+      const mockColumn = {
+        id: 1,
+        name: 'Column 1',
+        position: 1,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      mockPrismaService.column.findUnique.mockResolvedValue(mockColumn);
+
+      mockPrismaService.card.findUnique.mockResolvedValue(null);
+
+      await expect(service.update(999, updateCardDto)).rejects.toThrow(
+        new NotFoundException('O card não foi encontrado.'),
+      );
+
+      expect(mockPrismaService.card.update).not.toHaveBeenCalled();
+    });
+
+    it('Deve lançar NotFoundException quando a coluna não existir', async () => {
+      const updateCardDto: UpdateCardDto = {
+        name: 'Card Atualizado',
+        columnId: 999,
+      };
+
+      mockPrismaService.column.findUnique.mockResolvedValue(null);
+
+      await expect(service.update(1, updateCardDto)).rejects.toThrow(
+        new NotFoundException('A coluna não existe.'),
+      );
+
+      expect(mockPrismaService.card.findUnique).not.toHaveBeenCalled();
+      expect(mockPrismaService.card.update).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('remove', () => {
+    it('Deve remover um card pelo ID', async () => {
+      const mockCard: Card = {
+        id: 1,
+        name: 'Card a ser removido',
+        description: 'Descrição do card',
+        columnId: 1,
+        position: 1,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      mockPrismaService.card.findUnique.mockResolvedValue(mockCard);
+      mockPrismaService.card.delete.mockResolvedValue(mockCard);
+
+      await service.remove(1);
+
+      expect(mockPrismaService.card.findUnique).toHaveBeenCalledWith({
+        where: { id: 1 },
+      });
+
+      expect(mockPrismaService.card.delete).toHaveBeenCalledWith({
+        where: { id: 1 },
+      });
+    });
+
+    it('Deve lançar NotFoundException quando o card não for encontrado', async () => {
+      mockPrismaService.card.findUnique.mockResolvedValue(null);
+      await expect(service.remove(999)).rejects.toThrow(
+        new NotFoundException('O card não foi encontrado.'),
+      );
     });
   });
 });

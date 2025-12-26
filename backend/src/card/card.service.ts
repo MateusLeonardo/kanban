@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateCardDto } from './dto/create-card.dto';
 import { UpdateCardDto } from './dto/update-card.dto';
 import { PrismaService } from '../prisma/prisma.service';
@@ -33,18 +37,59 @@ export class CardService {
   }
 
   async reorderCard(reorderCardDto: ReorderCardDto[]) {
-    await Promise.all(
-      reorderCardDto.map(async (dto) => {
-        await this.prisma.card.update({
-          where: {
-            id: dto.id,
-          },
+    const cardIds = reorderCardDto.map((dto) => dto.id);
+
+    if (new Set(cardIds).size !== cardIds.length) {
+      throw new BadRequestException('Ids duplicados não são permitidos.');
+    }
+
+    const cards = await Promise.all(cardIds.map((id) => this.findOne(id)));
+
+    const cardsMap = new Map(cards.map((card) => [card.id, card]));
+
+    const positionsByColumn = new Map<number, Set<number>>();
+
+    for (const dto of reorderCardDto) {
+      const card = cardsMap.get(dto.id)!;
+      const columnId =
+        dto.columnId !== undefined ? dto.columnId : card.columnId;
+
+      if (!positionsByColumn.has(columnId)) {
+        positionsByColumn.set(columnId, new Set());
+      }
+
+      const positions = positionsByColumn.get(columnId)!;
+
+      if (positions.has(dto.position)) {
+        throw new BadRequestException(
+          `Posição ${dto.position} duplicada na coluna ${columnId}.`,
+        );
+      }
+
+      positions.add(dto.position);
+    }
+
+    const columnIds = reorderCardDto
+      .map((dto) => dto.columnId)
+      .filter((id): id is number => id !== undefined);
+
+    if (columnIds.length > 0) {
+      const uniqueColumnIds = [...new Set(columnIds)];
+      await Promise.all(
+        uniqueColumnIds.map((id) => this.columnService.findOne(id)),
+      );
+    }
+
+    return this.prisma.$transaction(
+      reorderCardDto.map((dto) =>
+        this.prisma.card.update({
+          where: { id: dto.id },
           data: {
             position: dto.position,
             ...(dto.columnId !== undefined && { columnId: dto.columnId }),
           },
-        });
-      }),
+        }),
+      ),
     );
   }
 
@@ -56,7 +101,7 @@ export class CardService {
     });
 
     if (!card) {
-      throw new NotFoundException('Card not found');
+      throw new NotFoundException('Card not found.');
     }
     return card;
   }

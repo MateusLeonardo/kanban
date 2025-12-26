@@ -29,11 +29,7 @@ export class CardService {
   }
 
   findAll() {
-    return this.prisma.card.findMany({
-      orderBy: {
-        position: 'asc',
-      },
-    });
+    return this.prisma.card.findMany();
   }
 
   async reorderCard(reorderCardDto: ReorderCardDto[]) {

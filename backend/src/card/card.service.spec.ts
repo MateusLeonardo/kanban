@@ -5,6 +5,8 @@ import { mockPrismaService } from 'src/prisma/prisma.service.mock';
 import { ColumnService } from 'src/column/column.service';
 import { CreateCardDto } from './dto/create-card.dto';
 import { Card, Column } from 'generated/prisma/client';
+import { NotFoundException } from '@nestjs/common';
+import { ReorderCardDto } from './dto/reorder-card-dto';
 
 describe('CardService', () => {
   let service: CardService;
@@ -175,6 +177,159 @@ describe('CardService', () => {
       const result = await service.findAll();
       expect(mockPrismaService.card.findMany).toHaveBeenCalledWith();
       expect(result).toEqual([]);
+    });
+  });
+
+  describe('findOne', () => {
+    it('Deve retornar um card pelo ID', async () => {
+      const mockCard: Card = {
+        id: 1,
+        name: 'Card 1',
+        description: 'Descrição do Card 1',
+        columnId: 1,
+        position: 1,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      mockPrismaService.card.findUnique.mockResolvedValue(mockCard);
+
+      const result = await service.findOne(mockCard.id);
+
+      expect(mockPrismaService.card.findUnique).toHaveBeenCalledWith({
+        where: { id: mockCard.id },
+      });
+      expect(result).toEqual(mockCard);
+    });
+
+    it('Deve lançar NotFoundException quando o card não for encontrado', async () => {
+      mockPrismaService.card.findUnique.mockResolvedValue(null);
+      await expect(service.findOne(999)).rejects.toThrow(
+        new NotFoundException('Card not found.'),
+      );
+    });
+  });
+
+  describe('reorderCard', () => {
+    it('Deve reordenar os cards da mesma coluna', async () => {
+      const reorderCardDto: ReorderCardDto[] = [
+        { id: 1, position: 2 },
+        { id: 2, position: 1 },
+      ];
+
+      const mockCards = [
+        {
+          id: 1,
+          name: 'Card 1',
+          description: 'Descrição 1',
+          position: 1,
+          columnId: 1,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          id: 2,
+          name: 'Card 2',
+          description: 'Descrição 2',
+          position: 2,
+          columnId: 1,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ];
+
+      mockPrismaService.card.findUnique
+        .mockResolvedValueOnce(mockCards[0])
+        .mockResolvedValueOnce(mockCards[1]);
+
+      mockPrismaService.$transaction.mockResolvedValue([
+        { ...mockCards[0], position: 2 },
+        { ...mockCards[1], position: 1 },
+      ]);
+
+      await service.reorderCard(reorderCardDto);
+
+      expect(mockPrismaService.card.findUnique).toHaveBeenCalledTimes(2);
+      expect(mockPrismaService.card.findUnique).toHaveBeenNthCalledWith(1, {
+        where: { id: 1 },
+      });
+      expect(mockPrismaService.card.findUnique).toHaveBeenNthCalledWith(2, {
+        where: { id: 2 },
+      });
+
+      expect(mockPrismaService.$transaction).toHaveBeenCalledTimes(1);
+    });
+
+    it('Deve reordenar os cards de colunas diferentes', async () => {
+      const reorderCardDto: ReorderCardDto[] = [
+        { id: 1, position: 2, columnId: 2 },
+        { id: 2, position: 1, columnId: 1 },
+      ];
+
+      const mockCards = [
+        {
+          id: 1,
+          name: 'Card 1',
+          description: 'Descrição 1',
+          position: 1,
+          columnId: 1,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          id: 2,
+          name: 'Card 2',
+          description: 'Descrição 2',
+          position: 2,
+          columnId: 1,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ];
+
+      const mockColumns = [
+        {
+          id: 1,
+          name: 'Column 1',
+          position: 1,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          id: 2,
+          name: 'Column 2',
+          position: 2,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ];
+
+      mockPrismaService.card.findUnique
+        .mockResolvedValueOnce(mockCards[0])
+        .mockResolvedValueOnce(mockCards[1]);
+
+      mockPrismaService.column.findUnique
+        .mockResolvedValueOnce(mockColumns[1]) // columnId: 2
+        .mockResolvedValueOnce(mockColumns[0]); // columnId: 1
+
+      mockPrismaService.$transaction.mockResolvedValue([
+        { ...mockCards[0], position: 2, columnId: 2 },
+        { ...mockCards[1], position: 1, columnId: 1 },
+      ]);
+
+      await service.reorderCard(reorderCardDto);
+
+      expect(mockPrismaService.card.findUnique).toHaveBeenCalledTimes(2);
+
+      expect(mockPrismaService.column.findUnique).toHaveBeenCalledTimes(2);
+      expect(mockPrismaService.column.findUnique).toHaveBeenNthCalledWith(1, {
+        where: { id: 2 },
+      });
+      expect(mockPrismaService.column.findUnique).toHaveBeenNthCalledWith(2, {
+        where: { id: 1 },
+      });
+
+      expect(mockPrismaService.$transaction).toHaveBeenCalledTimes(1);
     });
   });
 });

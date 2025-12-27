@@ -15,8 +15,6 @@ import { ConfirmDeleteCardDialog } from '../../../shared/card/confirm-delete-car
 })
 export class Card {
   card = input.required<CardModel>();
-  onCardUpdated = output();
-  onCardDeleted = output();
   readonly dialog = inject(MatDialog);
   kanbanService = inject(KanbanService);
 
@@ -30,9 +28,7 @@ export class Card {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (!result) return;
-      this.kanbanService.updateCard(result).subscribe(() => {
-        this.onCardUpdated.emit();
-      });
+      this.kanbanService.updateCard(result).subscribe();
     });
   }
 
@@ -46,9 +42,7 @@ export class Card {
     dialogRef.afterClosed().subscribe((result) => {
       if (!result) return;
 
-      this.kanbanService.deleteCard(this.card().id).subscribe(() => {
-        this.onCardDeleted.emit();
-      });
+      this.kanbanService.deleteCard(this.card().id).subscribe();
     });
   }
 }

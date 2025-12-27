@@ -99,7 +99,6 @@ export class CardService {
     );
 
     this.eventsGateway.emit('card.reordered', reordenedCards);
-    console.log(reordenedCards);
     return reordenedCards;
   }
 

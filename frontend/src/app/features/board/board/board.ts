@@ -8,10 +8,4 @@ import { Column } from '../column/column';
   templateUrl: './board.html',
   styleUrl: './board.css',
 })
-export class Board {
-  columnComponent = viewChild.required(Column);
-
-  onColumnCreated() {
-    this.columnComponent().loadColumnsWithCards();
-  }
-}
+export class Board {}

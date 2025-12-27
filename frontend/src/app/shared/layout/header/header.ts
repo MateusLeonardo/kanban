@@ -23,9 +23,7 @@ export class Header {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.kanbanService.createColumn(result).subscribe(() => {
-          this.columnCreated.emit();
-        });
+        this.kanbanService.createColumn(result).subscribe();
       }
     });
   }

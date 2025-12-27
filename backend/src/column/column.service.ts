@@ -7,10 +7,14 @@ import { CreateColumnDto } from './dto/create-column.dto';
 import { UpdateColumnDto } from './dto/update-column.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { ReorderColumnDto } from './dto/reorder-column.dto';
+import { EventsGateway } from 'src/events/events.gateway';
 
 @Injectable()
 export class ColumnService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private eventsGateway: EventsGateway,
+  ) {}
 
   async create(createColumnDto: CreateColumnDto) {
     const lastColumn = await this.prisma.column.findFirst({
@@ -19,12 +23,16 @@ export class ColumnService {
       },
     });
     const position = (lastColumn?.position ?? 0) + 1;
-    return this.prisma.column.create({
+    const column = await this.prisma.column.create({
       data: {
         ...createColumnDto,
         position,
       },
     });
+
+    this.eventsGateway.emit('column.created', column);
+
+    return column;
   }
 
   findAllWithCards() {
@@ -69,7 +77,7 @@ export class ColumnService {
 
     await Promise.all(ids.map((id) => this.findOne(id)));
 
-    await this.prisma.$transaction(
+    const reordenedColumns = await this.prisma.$transaction(
       reorderColumnDto.map((dto) =>
         this.prisma.column.update({
           where: { id: dto.id },
@@ -77,24 +85,34 @@ export class ColumnService {
         }),
       ),
     );
+
+    this.eventsGateway.emit('column.reordered', reordenedColumns);
+
+    return reordenedColumns;
   }
 
   async update(id: number, updateColumnDto: UpdateColumnDto) {
     await this.findOne(id);
-    return this.prisma.column.update({
+    const column = await this.prisma.column.update({
       where: {
         id,
       },
       data: updateColumnDto,
     });
+    this.eventsGateway.emit('column.updated', column);
+    return column;
   }
 
   async remove(id: number) {
     await this.findOne(id);
-    return this.prisma.column.delete({
+    const column = await this.prisma.column.delete({
       where: {
         id,
       },
     });
+
+    this.eventsGateway.emit('column.deleted', column);
+
+    return column;
   }
 }

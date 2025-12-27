@@ -8,12 +8,14 @@ import { UpdateCardDto } from './dto/update-card.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { ColumnService } from 'src/column/column.service';
 import { ReorderCardDto } from './dto/reorder-card-dto';
+import { EventsGateway } from 'src/events/events.gateway';
 
 @Injectable()
 export class CardService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly columnService: ColumnService,
+    private readonly eventsGateway: EventsGateway,
   ) {}
 
   async create(createCardDto: CreateCardDto) {
@@ -24,12 +26,16 @@ export class CardService {
       },
     });
     const position = (lastCard?.position ?? 0) + 1;
-    return this.prisma.card.create({
+    const newCard = await this.prisma.card.create({
       data: {
         ...createCardDto,
         position,
       },
     });
+
+    this.eventsGateway.emit('card.created', newCard);
+
+    return newCard;
   }
 
   findAll() {
@@ -80,7 +86,7 @@ export class CardService {
       );
     }
 
-    return this.prisma.$transaction(
+    const reordenedCards = await this.prisma.$transaction(
       reorderCardDto.map((dto) =>
         this.prisma.card.update({
           where: { id: dto.id },
@@ -91,6 +97,10 @@ export class CardService {
         }),
       ),
     );
+
+    this.eventsGateway.emit('card.reordered', reordenedCards);
+    console.log(reordenedCards);
+    return reordenedCards;
   }
 
   async findOne(id: number) {
@@ -109,7 +119,7 @@ export class CardService {
   async update(id: number, updateCardDto: UpdateCardDto) {
     await this.columnService.findOne(updateCardDto.columnId);
     await this.findOne(id);
-    return this.prisma.card.update({
+    const cardUpdated = await this.prisma.card.update({
       where: {
         id,
       },
@@ -117,14 +127,45 @@ export class CardService {
         ...updateCardDto,
       },
     });
+
+    this.eventsGateway.emit('card.updated', cardUpdated);
+
+    return cardUpdated;
   }
 
   async remove(id: number) {
     await this.findOne(id);
-    return this.prisma.card.delete({
+    const cardDeleted = await this.prisma.card.delete({
       where: {
         id,
       },
     });
+
+    const cards = await this.prisma.card.findMany({
+      where: {
+        columnId: cardDeleted.columnId,
+      },
+      orderBy: {
+        position: 'asc',
+      },
+    });
+
+    const reordered = cards.map((c, index) => ({
+      id: c.id,
+      columnId: c.columnId,
+      position: index + 1,
+    }));
+
+    await this.prisma.$transaction(
+      reordered.map((c) =>
+        this.prisma.card.update({
+          where: { id: c.id },
+          data: { position: c.position },
+        }),
+      ),
+    );
+
+    this.eventsGateway.emit('card.deleted', { id });
+    this.eventsGateway.emit('card.reordered', reordered);
   }
 }

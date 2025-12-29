@@ -1,6 +1,5 @@
-import { Component, inject, input, output } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { CardModel, KanbanService } from '../../../services/kanban.service';
-import { CdkDrag } from '@angular/cdk/drag-drop';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
@@ -9,7 +8,7 @@ import { ConfirmDeleteCardDialog } from '../../../shared/card/confirm-delete-car
 
 @Component({
   selector: 'app-card',
-  imports: [CdkDrag, MatIconModule, MatButtonModule],
+  imports: [MatIconModule, MatButtonModule],
   templateUrl: './card.html',
   styleUrl: './card.css',
 })

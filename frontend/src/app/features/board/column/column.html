@@ -8,7 +8,7 @@
     class="columns-wrapper"
   >
     @for (column of columns(); track column.id;) {
-    <div class="example-container" cdkDrag [cdkDragLockAxis]="'x'">
+    <div class="column-container" cdkDrag [cdkDragLockAxis]="'x'">
       <!-- Handle para arrastar a coluna -->
       <div class="column-header" cdkDragHandle>
         <div>
@@ -30,11 +30,11 @@
         [cdkDropListData]="column.cards"
         [id]="'column-' + column.id"
         [cdkDropListConnectedTo]="connectedLists()"
-        class="example-list"
+        class="cards-list"
         (cdkDropListDropped)="dropCard($event, column.id)"
       >
         @for (card of column.cards; track card.id) {
-        <div class="example-box" cdkDrag>
+        <div cdkDrag>
           <app-card [card]="card" />
         </div>
         }

@@ -9,7 +9,7 @@
   min-height: 500px;
 }
 
-.example-container {
+.column-container {
   width: 350px;
   background: #f5f5f5;
   border-radius: 8px;
@@ -18,7 +18,7 @@
 
 .column-header {
   margin-bottom: 16px;
-  cursor: move; /* Indica que pode arrastar pela header */
+  cursor: move;
   user-select: none;
   display: flex;
   justify-content: space-between;
@@ -32,16 +32,12 @@
   color: #494949;
 }
 
-.example-list {
+.cards-list {
   height: 400px;
   overflow-y: auto;
   background: white;
   border-radius: 4px;
   padding: 8px;
-}
-
-.example-box:hover {
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .cdk-drag-preview {

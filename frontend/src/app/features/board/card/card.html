@@ -1,14 +1,14 @@
 <div class="card">
-  <div class="card__content">
+  <div class="card-content">
     <h3>{{ card().name }}</h3>
     <p>{{ card().description ?? '' }}</p>
   </div>
-  <div class="card__actions">
-    <button mat-icon-button class="button__edit" (click)="openUpdateCardDialog()">
+  <div class="card-actions">
+    <button mat-icon-button class="button-edit" (click)="openUpdateCardDialog()">
       <mat-icon>edit</mat-icon>
     </button>
 
-    <button mat-icon-button class="button__delete" (click)="openConfirmDeleteCardDialog()">
+    <button mat-icon-button class="button-delete" (click)="openConfirmDeleteCardDialog()">
       <mat-icon>delete</mat-icon>
     </button>
   </div>

@@ -25,7 +25,7 @@ export class CardService {
         position: 'desc',
       },
     });
-    const position = (lastCard?.position ?? 0) + 1;
+    const position = lastCard ? lastCard.position + 1 : 0;
     const newCard = await this.prisma.card.create({
       data: {
         ...createCardDto,

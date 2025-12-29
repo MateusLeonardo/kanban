@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { from, fromEvent, Observable } from 'rxjs';
+import { fromEvent, Observable } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
-import { ColumnModel } from './kanban.service';
+import { environment } from '../../environments/environment.development';
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +10,7 @@ export class WebsocketService {
   private socket: Socket;
 
   constructor() {
-    this.socket = io('http://localhost:3000', {
+    this.socket = io(environment.apiUrl, {
       transports: ['websocket'],
       autoConnect: true,
     });

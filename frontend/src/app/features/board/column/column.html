@@ -7,7 +7,7 @@
     (cdkDropListDropped)="dropColumn($event)"
     class="columns-wrapper"
   >
-    @for (column of columns(); track column.id; let idx = $index) {
+    @for (column of columns(); track column.id;) {
     <div class="example-container" cdkDrag [cdkDragLockAxis]="'x'">
       <!-- Handle para arrastar a coluna -->
       <div class="column-header" cdkDragHandle>

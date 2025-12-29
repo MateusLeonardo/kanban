@@ -1,4 +1,4 @@
-import { Component, viewChild, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { Header } from '../../../shared/layout/header/header';
 import { Column } from '../column/column';
 

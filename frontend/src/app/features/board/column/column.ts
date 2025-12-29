@@ -60,130 +60,25 @@ export class Column implements OnInit {
   ngOnInit() {
     this.initBoard();
 
-    this.socket
-      .on<ColumnModel>('column.created')
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((createdColumn) => {
-        const columnWithCards = {
-          ...createdColumn,
-          cards: createdColumn.cards || [],
-        };
-        this.columns.update((cols) => [...cols, columnWithCards]);
-      });
+    const reloadEvents = [
+      'column.created',
+      'column.updated',
+      'column.reordered',
+      'column.deleted',
+      'card.created',
+      'card.updated',
+      'card.reordered',
+      'card.deleted',
+    ];
 
-    this.socket
-      .on<ColumnModel>('column.updated')
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((updatedColumn) => {
-        this.columns.update((cols) =>
-          cols.map((col) => (col.id === updatedColumn.id ? { ...col, ...updatedColumn } : col))
-        );
-      });
-
-    this.socket
-      .on<ColumnModel[]>('column.reordered')
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((reorderedColumns) => {
-        this.columns.update((currentColumns) => {
-          const positionMap = new Map(reorderedColumns.map((col) => [col.id, col.position]));
-
-          const updated = currentColumns.map((col) => ({
-            ...col,
-            position: positionMap.get(col.id) ?? col.position,
-          }));
-
-          return updated.sort((a, b) => a.position - b.position);
+    reloadEvents.forEach((event) => {
+      this.socket
+        .on<any>(event)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(() => {
+          this.initBoard();
         });
-      });
-
-    this.socket
-      .on<ColumnModel>('column.deleted')
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((column) => {
-        this.columns.update((cols) => cols.filter((col) => col.id !== column.id));
-      });
-
-    this.socket
-      .on<CardModel>('card.created')
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((createdCard) => {
-        this.columns.update((currentColumns) =>
-          currentColumns.map((col) =>
-            col.id === createdCard.columnId
-              ? { ...col, cards: [...(col.cards ?? []), createdCard] }
-              : col
-          )
-        );
-      });
-
-    this.socket
-      .on<CardModel[]>('card.reordered')
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((reorderedCards) => {
-        this.columns.update((currentColumns) => {
-          const cardMap = new Map(reorderedCards.map((card) => [card.id, card]));
-
-          return currentColumns.map((col) => {
-            let cards = col.cards.filter((card) => {
-              const updated = cardMap.get(card.id);
-              return !updated || updated.columnId === col.id;
-            });
-
-            cards = cards.map((card) => {
-              const updated = cardMap.get(card.id);
-              if (!updated) return card;
-
-              return {
-                ...card,
-                columnId: updated.columnId,
-                position: updated.position,
-              };
-            });
-
-            reorderedCards
-              .filter((card) => card.columnId === col.id)
-              .forEach((card) => {
-                const exists = cards.some((c) => c.id === card.id);
-                if (!exists) {
-                  cards.push({
-                    ...card,
-                  });
-                }
-              });
-
-            cards.sort((a, b) => a.position - b.position);
-
-            return {
-              ...col,
-              cards,
-            };
-          });
-        });
-      });
-
-    this.socket
-      .on<CardModel>('card.updated')
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((updatedCard) => {
-        this.columns.update((currentColumns) =>
-          currentColumns.map((col) => ({
-            ...col,
-            cards: col.cards.map((card) => (card.id === updatedCard.id ? updatedCard : card)),
-          }))
-        );
-      });
-
-    this.socket
-      .on<{ id: number }>('card.deleted')
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(({ id }) => {
-        this.columns.update((currentColumns) =>
-          currentColumns.map((col) => ({
-            ...col,
-            cards: col.cards.filter((card) => card.id !== id),
-          }))
-        );
-      });
+    });
   }
 
   private initBoard() {

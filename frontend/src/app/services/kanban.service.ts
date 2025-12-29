@@ -65,28 +65,26 @@ export class KanbanService {
   reorderColumn(reorderColumnDto: ReorderColumnDto[]) {
     return this.http.post(`${environment.apiUrl}/column/reorder`, reorderColumnDto);
   }
-
-  reorderCard(reorderCardDto: ReorderCardDto[]) {
-    return this.http.post(`${environment.apiUrl}/card/reorder`, reorderCardDto);
-  }
-
   createColumn(createColumnDto: CreateColumnDto) {
     return this.http.post(`${environment.apiUrl}/column`, createColumnDto);
   }
   updateColumn({ id, name }: UpdateColumnDto) {
     return this.http.patch(`${environment.apiUrl}/column/${id}`, { name });
   }
-  deleteColumnWithCards(columnId: number) {
+  deleteColumn(columnId: number) {
     return this.http.delete(`${environment.apiUrl}/column/${columnId}`);
   }
 
+  createCard(createCardDto: CreateCardDto) {
+    return this.http.post(`${environment.apiUrl}/card`, createCardDto);
+  }
+  reorderCard(reorderCardDto: ReorderCardDto[]) {
+    return this.http.post(`${environment.apiUrl}/card/reorder`, reorderCardDto);
+  }
   updateCard({ id, ...updateCardDto }: UpdateCardDto) {
     return this.http.patch(`${environment.apiUrl}/card/${id}`, updateCardDto);
   }
   deleteCard(cardId: number) {
     return this.http.delete(`${environment.apiUrl}/card/${cardId}`);
-  }
-  createCard(createCardDto: CreateCardDto) {
-    return this.http.post(`${environment.apiUrl}/card`, createCardDto);
   }
 }

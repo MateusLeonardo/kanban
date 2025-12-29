@@ -6,10 +6,13 @@ import { CreateColumnDto } from './dto/create-column.dto';
 import { Column } from 'generated/prisma/client';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { ReorderColumnDto } from './dto/reorder-column.dto';
+import { EventsGateway } from 'src/events/events.gateway';
+import { mockEventsGateway } from 'src/events/events.gateway.mock';
 
 describe('ColumnService', () => {
   let service: ColumnService;
   let prisma: PrismaService;
+  let eventsGateway: EventsGateway;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -18,6 +21,10 @@ describe('ColumnService', () => {
         {
           provide: PrismaService,
           useValue: mockPrismaService,
+        },
+        {
+          provide: EventsGateway,
+          useValue: mockEventsGateway,
         },
       ],
     }).compile();
@@ -33,7 +40,7 @@ describe('ColumnService', () => {
   });
 
   describe('create', () => {
-    it('Deve criar uma coluna com posição 1 quando não existirem colunas', async () => {
+    it('Deve criar uma coluna com posição 0 quando não existirem colunas', async () => {
       const createColumnDto: CreateColumnDto = { name: 'To Do' };
 
       mockPrismaService.column.findFirst.mockResolvedValue(null);
@@ -41,7 +48,7 @@ describe('ColumnService', () => {
       const expectedColumn = {
         id: 1,
         name: 'To Do',
-        position: 1,
+        position: 0,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -56,7 +63,7 @@ describe('ColumnService', () => {
       expect(mockPrismaService.column.create).toHaveBeenCalledWith({
         data: {
           ...createColumnDto,
-          position: 1,
+          position: 0,
         },
       });
 

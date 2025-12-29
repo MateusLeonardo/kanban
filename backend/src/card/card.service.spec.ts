@@ -8,11 +8,14 @@ import { Card, Column } from 'generated/prisma/client';
 import { NotFoundException } from '@nestjs/common';
 import { ReorderCardDto } from './dto/reorder-card-dto';
 import { UpdateCardDto } from './dto/update-card.dto';
+import { EventsGateway } from 'src/events/events.gateway';
+import { mockEventsGateway } from 'src/events/events.gateway.mock';
 
 describe('CardService', () => {
   let service: CardService;
   let prisma: PrismaService;
   let columnService: ColumnService;
+  let eventsGateway: EventsGateway;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -23,13 +26,20 @@ describe('CardService', () => {
           useValue: mockPrismaService,
         },
         ColumnService,
+        {
+          provide: EventsGateway,
+          useValue: mockEventsGateway,
+        },
       ],
     }).compile();
 
     service = module.get<CardService>(CardService);
     prisma = module.get<PrismaService>(PrismaService);
     columnService = module.get<ColumnService>(ColumnService);
+    eventsGateway = module.get<EventsGateway>(EventsGateway);
+  });
 
+  afterEach(() => {
     jest.clearAllMocks();
   });
 
@@ -38,7 +48,7 @@ describe('CardService', () => {
   });
 
   describe('create', () => {
-    it('Deve criar um card com a posição 1 quando não existirem cards na coluna', async () => {
+    it('Deve criar um card com a posição 0 quando não existirem cards na coluna', async () => {
       const createCardDto: CreateCardDto = {
         name: 'Novo Card',
         description: 'Descrição do novo card',
@@ -48,7 +58,7 @@ describe('CardService', () => {
       const mockColumn: Column = {
         id: 1,
         name: 'To Do',
-        position: 1,
+        position: 0,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -58,7 +68,7 @@ describe('CardService', () => {
         name: createCardDto.name,
         description: createCardDto.description ?? '',
         columnId: createCardDto.columnId,
-        position: 1,
+        position: 0,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -78,7 +88,7 @@ describe('CardService', () => {
       expect(mockPrismaService.card.create).toHaveBeenCalledWith({
         data: {
           ...createCardDto,
-          position: 1,
+          position: 0,
         },
       });
       expect(result).toEqual(mockCard);

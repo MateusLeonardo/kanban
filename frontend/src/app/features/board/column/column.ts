@@ -31,31 +31,10 @@ import { Card } from '../card/card';
 })
 export class Column implements OnInit {
   protected readonly columns = signal<ColumnModel[]>([]);
-
-  protected readonly connectedLists = computed(() =>
-    this.columns().map((col) => `column-${col.id}`)
-  );
-
   private kanban = inject(KanbanService);
   private socket = inject(WebsocketService);
   private dialog = inject(MatDialog);
   private destroyRef = inject(DestroyRef);
-
-  openUpdateColumnDialog(column: ColumnModel) {
-    const dialogRef = this.dialog.open(UpdateColumnDialog, {
-      width: '450px',
-      disableClose: false,
-      data: {
-        column,
-      },
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.kanban.updateColumn(result).subscribe();
-      }
-    });
-  }
 
   ngOnInit() {
     this.initBoard();
@@ -90,6 +69,10 @@ export class Column implements OnInit {
       this.columns.set(columnsWithCards);
     });
   }
+
+  protected readonly connectedLists = computed(() =>
+    this.columns().map((col) => `column-${col.id}`)
+  );
 
   dropColumn(event: CdkDragDrop<ColumnModel[]>) {
     const cols = [...this.columns()];
@@ -162,6 +145,23 @@ export class Column implements OnInit {
       this.kanban.reorderCard(cardsToUpdate).subscribe();
     }
   }
+
+  openUpdateColumnDialog(column: ColumnModel) {
+    const dialogRef = this.dialog.open(UpdateColumnDialog, {
+      width: '450px',
+      disableClose: false,
+      data: {
+        column,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.kanban.updateColumn(result).subscribe();
+      }
+    });
+  }
+
   openDeleteColumnDialog(column: ColumnModel) {
     const dialogRef = this.dialog.open(ConfirmDeleteColumnDialog, {
       width: '350px',
@@ -173,7 +173,7 @@ export class Column implements OnInit {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.kanban.deleteColumnWithCards(column.id).subscribe();
+        this.kanban.deleteColumn(column.id).subscribe();
       }
     });
   }

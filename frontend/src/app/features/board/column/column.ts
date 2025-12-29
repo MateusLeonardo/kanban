@@ -1,34 +1,33 @@
 import {
   CdkDrag,
   CdkDragDrop,
-  CdkDragHandle,
   CdkDropList,
   moveItemInArray,
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
-import { Component, DestroyRef, inject, OnInit, signal, computed } from '@angular/core';
+import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
+import { MatIcon } from '@angular/material/icon';
 import {
   CardModel,
-  ReorderCardDto,
   ColumnModel,
-  KanbanService,
   CreateCardDto,
+  KanbanService,
+  ReorderCardDto,
 } from '../../../services/kanban.service';
-import { MatDialog } from '@angular/material/dialog';
-import { UpdateColumnDialog } from '../../../shared/column/update-column-dialog/update-column-dialog';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIcon } from '@angular/material/icon';
-import { ConfirmDeleteColumnDialog } from '../../../shared/column/confirm-delete-column-dialog/confirm-delete-column-dialog';
-import { Card } from '../card/card';
-import { CreateCardDialog } from '../../../shared/card/create-card-dialog/create-card-dialog';
 import { WebsocketService } from '../../../services/websocket.service';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { CreateCardDialog } from '../../../shared/card/create-card-dialog/create-card-dialog';
+import { ConfirmDeleteColumnDialog } from '../../../shared/column/confirm-delete-column-dialog/confirm-delete-column-dialog';
+import { UpdateColumnDialog } from '../../../shared/column/update-column-dialog/update-column-dialog';
+import { Card } from '../card/card';
 
 @Component({
   selector: 'board-column',
   templateUrl: './column.html',
   styleUrl: './column.css',
-  imports: [CdkDropList, CdkDrag, CdkDragHandle, MatButtonModule, MatIcon, Card],
+  imports: [CdkDropList, CdkDrag, MatButtonModule, MatIcon, Card],
 })
 export class Column implements OnInit {
   protected readonly columns = signal<ColumnModel[]>([]);
@@ -188,8 +187,8 @@ export class Column implements OnInit {
   }
 
   private initBoard() {
-    this.kanban.getColumnsWithCards().subscribe((columns) => {
-      const columnsWithCards = columns.map((col) => ({
+    this.kanban.getColumnsWithCards().subscribe((columnsFetch) => {
+      const columnsWithCards = columnsFetch.map((col) => ({
         ...col,
         cards: col.cards || [],
       }));
@@ -215,7 +214,9 @@ export class Column implements OnInit {
 
   dropCard(event: CdkDragDrop<CardModel[]>, targetColumnId: number) {
     if (event.previousContainer === event.container) {
+      // MOVIMENTO DENTRO DA MESMA COLUNA
       const cards = [...event.container.data];
+
       moveItemInArray(cards, event.previousIndex, event.currentIndex);
 
       this.columns.update((cols) =>
@@ -226,25 +227,25 @@ export class Column implements OnInit {
         .reorderCard(
           cards.map((card, index) => ({
             id: card.id,
-            position: index + 1,
+            position: index,
           }))
         )
         .subscribe();
     } else {
+      // MOVIMENTO ENTRE COLUNAS
       const sourceCards = [...event.previousContainer.data];
       const targetCards = [...event.container.data];
 
       transferArrayItem(sourceCards, targetCards, event.previousIndex, event.currentIndex);
 
-      const movedCard = targetCards[event.currentIndex];
-      movedCard.columnId = targetColumnId;
+      const sourceColumnId = +event.previousContainer.id.replace('column-', '');
 
       this.columns.update((cols) =>
         cols.map((col) => {
           if (col.id === targetColumnId) {
             return { ...col, cards: targetCards };
           }
-          if (col.cards === event.previousContainer.data) {
+          if (col.id === sourceColumnId) {
             return { ...col, cards: sourceCards };
           }
           return col;
@@ -254,11 +255,11 @@ export class Column implements OnInit {
       const cardsToUpdate: ReorderCardDto[] = [
         ...sourceCards.map((card, index) => ({
           id: card.id,
-          position: index + 1,
+          position: index,
         })),
         ...targetCards.map((card, index) => ({
           id: card.id,
-          position: index + 1,
+          position: index,
           columnId: targetColumnId,
         })),
       ];
@@ -266,7 +267,6 @@ export class Column implements OnInit {
       this.kanban.reorderCard(cardsToUpdate).subscribe();
     }
   }
-
   openDeleteColumnDialog(column: ColumnModel) {
     const dialogRef = this.dialog.open(ConfirmDeleteColumnDialog, {
       width: '350px',

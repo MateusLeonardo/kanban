@@ -5,9 +5,10 @@ import { ColumnModule } from 'src/column/column.module';
 import { ColumnService } from 'src/column/column.service';
 import { PrismaModule } from '../prisma/prisma.module';
 import { KanbanModule } from 'src/gateways/events/events.module';
+import { AblyModule } from 'src/gateways/ably/ably.module';
 
 @Module({
-  imports: [ColumnModule, PrismaModule, KanbanModule],
+  imports: [ColumnModule, PrismaModule, KanbanModule, AblyModule],
   controllers: [CardController],
   providers: [CardService, ColumnService],
 })

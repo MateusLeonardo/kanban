@@ -31,6 +31,7 @@ export class AblyGateway implements OnModuleInit, OnModuleDestroy {
   async emit(event: string, data: any) {
     try {
       await this.channel.publish(event, data);
+      console.log('Eveto emitido', event, data);
     } catch (error) {
       throw error;
     }

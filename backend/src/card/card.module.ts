@@ -4,7 +4,7 @@ import { CardController } from './card.controller';
 import { ColumnModule } from 'src/column/column.module';
 import { ColumnService } from 'src/column/column.service';
 import { PrismaModule } from '../prisma/prisma.module';
-import { KanbanModule } from 'src/events/events.module';
+import { KanbanModule } from 'src/gateways/events/events.module';
 
 @Module({
   imports: [ColumnModule, PrismaModule, KanbanModule],

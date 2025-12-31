@@ -8,14 +8,16 @@ import { UpdateCardDto } from './dto/update-card.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { ColumnService } from 'src/column/column.service';
 import { ReorderCardDto } from './dto/reorder-card-dto';
-import { EventsGateway } from 'src/events/events.gateway';
+import { EventsGateway } from 'src/gateways/events/events.gateway';
+import { AblyGateway } from 'src/gateways/ably/ably.gateway';
 
 @Injectable()
 export class CardService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly columnService: ColumnService,
-    private readonly eventsGateway: EventsGateway,
+    // private readonly eventsGateway: EventsGateway,
+    private readonly eventsGateway: AblyGateway,
   ) {}
 
   async create(createCardDto: CreateCardDto) {

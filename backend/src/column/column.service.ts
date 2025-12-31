@@ -7,13 +7,15 @@ import { CreateColumnDto } from './dto/create-column.dto';
 import { UpdateColumnDto } from './dto/update-column.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { ReorderColumnDto } from './dto/reorder-column.dto';
-import { EventsGateway } from 'src/events/events.gateway';
+import { EventsGateway } from 'src/gateways/events/events.gateway';
+import { AblyGateway } from 'src/gateways/ably/ably.gateway';
 
 @Injectable()
 export class ColumnService {
   constructor(
     private prisma: PrismaService,
-    private eventsGateway: EventsGateway,
+    // private eventsGateway: EventsGateway,
+    private eventsGateway: AblyGateway,
   ) {}
 
   async create(createColumnDto: CreateColumnDto) {

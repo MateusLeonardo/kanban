@@ -6,8 +6,8 @@ import { CreateColumnDto } from './dto/create-column.dto';
 import { Column } from 'generated/prisma/client';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { ReorderColumnDto } from './dto/reorder-column.dto';
-import { EventsGateway } from 'src/events/events.gateway';
-import { mockEventsGateway } from 'src/events/events.gateway.mock';
+import { EventsGateway } from 'src/gateways/events/events.gateway';
+import { mockEventsGateway } from 'src/gateways/events/events.gateway.mock';
 
 describe('ColumnService', () => {
   let service: ColumnService;

@@ -8,8 +8,8 @@ import { Card, Column } from 'generated/prisma/client';
 import { NotFoundException } from '@nestjs/common';
 import { ReorderCardDto } from './dto/reorder-card-dto';
 import { UpdateCardDto } from './dto/update-card.dto';
-import { EventsGateway } from 'src/events/events.gateway';
-import { mockEventsGateway } from 'src/events/events.gateway.mock';
+import { EventsGateway } from 'src/gateways/events/events.gateway';
+import { mockEventsGateway } from 'src/gateways/events/events.gateway.mock';
 
 describe('CardService', () => {
   let service: CardService;

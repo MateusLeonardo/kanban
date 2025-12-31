@@ -6,7 +6,8 @@ import { ColumnModule } from './column/column.module';
 import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionFilter } from './filters/all-exception.filter';
 import { CardModule } from './card/card.module';
-import { EventsGateway } from './events/events.gateway';
+import { EventsGateway } from './gateways/events/events.gateway';
+import { AblyModule } from './gateways/ably/ably.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { EventsGateway } from './events/events.gateway';
       useClass: AllExceptionFilter,
     },
     EventsGateway,
+    AblyModule,
   ],
 })
 export class AppModule {}

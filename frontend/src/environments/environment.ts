@@ -1,3 +1,3 @@
 export const environment = {
-  apiUrl: 'https://kanban-chi-ruby.vercel.app/',
+  apiUrl: 'https://kanban-chi-ruby.vercel.app',
 };

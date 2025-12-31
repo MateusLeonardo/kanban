@@ -10,7 +10,7 @@ export class WebsocketService {
   // private socket: Socket;
   private client: Ably.RealtimeClient;
   private channel: Ably.RealtimeChannel;
-  private readonly CHANNEL_NAME = 'kanban';
+  private readonly CHANNEL_NAME = 'kanban-board';
 
   constructor() {
     // this.socket = io(environment.apiUrl, {

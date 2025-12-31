@@ -32,15 +32,15 @@ export class WebsocketService {
     this.channel = this.client.channels.get(this.CHANNEL_NAME);
 
     this.client.connection.on('connected', () => {
-      console.log('✅ Connected to Ably server');
+      console.log('Conectado ao Ably server');
     });
 
     this.client.connection.on('disconnected', () => {
-      console.log('⚠️ Disconnected from Ably server');
+      console.log('Disconectado do Ably server');
     });
 
     this.client.connection.on('failed', (error) => {
-      console.error('❌ Connection failed:', error);
+      console.error('Conecção falhou:', error);
     });
   }
 

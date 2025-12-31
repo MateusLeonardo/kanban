@@ -7,7 +7,7 @@ import { Server } from 'socket.io';
 
 @WebSocketGateway({
   cors: {
-    origin: 'http://localhost:4200',
+    origin: process.env.FRONTEND_URL,
   },
 })
 export class EventsGateway implements OnGatewayInit {

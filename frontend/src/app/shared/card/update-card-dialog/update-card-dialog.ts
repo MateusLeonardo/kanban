@@ -43,7 +43,6 @@ export class UpdateCardDialog {
 
     this.dialogRef.close({
       id: this.data.card.id,
-      columnId: this.data.card.columnId,
       ...this.cardForm.value,
     });
   }

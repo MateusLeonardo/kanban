@@ -43,7 +43,6 @@ export interface UpdateColumnDto {
 export interface UpdateCardDto {
   id: number;
   name: string;
-  columnId: number;
   description?: string;
 }
 

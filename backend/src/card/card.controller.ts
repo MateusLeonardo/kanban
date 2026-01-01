@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { CardService } from './card.service';
 import { CreateCardDto } from './dto/create-card.dto';
@@ -32,13 +33,16 @@ export class CardController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.cardService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.cardService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCardDto: UpdateCardDto) {
-    return this.cardService.update(+id, updateCardDto);
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateCardDto: UpdateCardDto,
+  ) {
+    return this.cardService.update(id, updateCardDto);
   }
 
   @Delete(':id')

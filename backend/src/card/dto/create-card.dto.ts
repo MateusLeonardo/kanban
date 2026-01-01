@@ -11,8 +11,4 @@ export class CreateCardDto {
 
   @IsInt()
   columnId: number;
-
-  @IsInt()
-  @IsOptional()
-  position?: number;
 }

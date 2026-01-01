@@ -31,17 +31,17 @@ export class WebsocketService {
     });
     this.channel = this.client.channels.get(this.CHANNEL_NAME);
 
-    this.client.connection.on('connected', () => {
-      console.log('Conectado ao Ably server');
-    });
+    // this.client.connection.on('connected', () => {
+    //   console.log('Conectado ao Ably server');
+    // });
 
-    this.client.connection.on('disconnected', () => {
-      console.log('Disconectado do Ably server');
-    });
+    // this.client.connection.on('disconnected', () => {
+    //   console.log('Disconectado do Ably server');
+    // });
 
-    this.client.connection.on('failed', (error) => {
-      console.error('Conecção falhou:', error);
-    });
+    // this.client.connection.on('failed', (error) => {
+    //   console.error('Conecção falhou:', error);
+    // });
   }
 
   // on<T>(event: string): Observable<T> {

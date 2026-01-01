@@ -17,7 +17,6 @@ export class AblyGateway implements OnModuleInit, OnModuleDestroy {
 
     await new Promise<void>((resolve, reject) => {
       this.client.connection.on('connected', () => {
-        console.log('Ably Gateway inicializado');
         resolve();
       });
       this.client.connection.on('failed', reject);
@@ -31,8 +30,8 @@ export class AblyGateway implements OnModuleInit, OnModuleDestroy {
   async emit(event: string, data: any) {
     try {
       await this.channel.publish(event, data);
-      console.log('Eveto emitido', event, data);
     } catch (error) {
+      console.error('Erro ao enviar mensagem: ', error);
       throw error;
     }
   }

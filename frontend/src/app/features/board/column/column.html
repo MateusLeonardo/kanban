@@ -1,3 +1,6 @@
+@if(isLoading()) {
+<app-spinner />
+} @else {
 <div class="kanban-board">
   <!-- Drag and drop das COLUNAS -->
   <div
@@ -50,3 +53,4 @@
     }
   </div>
 </div>
+}

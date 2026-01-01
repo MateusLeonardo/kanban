@@ -22,15 +22,19 @@ import { CreateCardDialog } from '../../../shared/card/create-card-dialog/create
 import { ConfirmDeleteColumnDialog } from '../../../shared/column/confirm-delete-column-dialog/confirm-delete-column-dialog';
 import { UpdateColumnDialog } from '../../../shared/column/update-column-dialog/update-column-dialog';
 import { Card } from '../card/card';
+import { AsyncPipe } from '@angular/common';
+import { finalize } from 'rxjs';
+import { Spinner } from '../../../shared/spinner/spinner';
 
 @Component({
   selector: 'board-column',
   templateUrl: './column.html',
   styleUrl: './column.css',
-  imports: [CdkDropList, CdkDrag, MatButtonModule, MatIcon, Card],
+  imports: [CdkDropList, CdkDrag, MatButtonModule, MatIcon, Card, Spinner],
 })
 export class Column implements OnInit {
   protected readonly columns = signal<ColumnModel[]>([]);
+  protected readonly isLoading = signal<boolean>(false);
   private kanban = inject(KanbanService);
   private socket = inject(WebsocketService);
   private dialog = inject(MatDialog);
@@ -55,19 +59,27 @@ export class Column implements OnInit {
         .on<any>(event)
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe(() => {
-          this.initBoard();
+          this.initBoard(false);
         });
     });
   }
 
-  private initBoard() {
-    this.kanban.getColumnsWithCards().subscribe((columnsFetch) => {
-      const columnsWithCards = columnsFetch.map((col) => ({
-        ...col,
-        cards: col.cards || [],
-      }));
-      this.columns.set(columnsWithCards);
-    });
+  private initBoard(showLoading: boolean = true) {
+    if (showLoading) this.isLoading.set(true);
+    this.kanban
+      .getColumnsWithCards()
+      .pipe(
+        finalize(() => {
+          if (showLoading) this.isLoading.set(false);
+        })
+      )
+      .subscribe((columnsFetch) => {
+        const columnsWithCards = columnsFetch.map((col) => ({
+          ...col,
+          cards: col.cards || [],
+        }));
+        this.columns.set(columnsWithCards);
+      });
   }
 
   protected readonly connectedLists = computed(() =>

@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ColumnService } from './column.service';
 import { CreateColumnDto } from './dto/create-column.dto';
@@ -32,17 +33,20 @@ export class ColumnController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.columnService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.columnService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateColumnDto: UpdateColumnDto) {
-    return this.columnService.update(+id, updateColumnDto);
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateColumnDto: UpdateColumnDto,
+  ) {
+    return this.columnService.update(id, updateColumnDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.columnService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.columnService.remove(id);
   }
 }
